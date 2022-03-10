@@ -58,13 +58,16 @@ That said, these specifications seem extremely loose, because opening the md fil
 
 The fix to this problem looks to be quite complicated. A variable could be defined to count the bracket matching depth, so the first `[` would make the variable 1, then the second one would make it 2, with closing brackets reducing it by 1, and so on. That way only depth 0 brackets would be matched, ignoring everything inside as plain text.
 
-To be more specific, this part of `Markdown-Parse` requires bracket matching checks between the first and the second line:
+To be more specific, this part of `Markdown-Parse` requires bracket matching checks between the first and the second line, where I have added a comment:
 ```
 int nextCloseBracket = markdown.indexOf("]", nextOpenBracket);
+
+// Add a while loop, modifying a variable to find a matching closing bracket, using that as the nextCloseBracket, rather than the one just found.
+
 int openParen = markdown.indexOf("(", nextCloseBracket);
 ```
 
-The openParen index should only be searched after the matching closing bracket has been found.
+The openParen index should only be searched after the matching closing bracket has been found. This way anything inside the plaintext description of the image is not treated as a link. 
 
 ## Test file 567
 

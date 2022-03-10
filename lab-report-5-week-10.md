@@ -71,7 +71,7 @@ The openParen index should only be searched after the matching closing bracket h
 
 ## Test file 567
 
-This is what test file 519 looks like:
+This is what test file 567 looks like:
 ```
 [foo](not a link)
 
@@ -92,7 +92,7 @@ Using the commonmark.js site, the render is something I never expected. This is 
 
 ![image](lab5image1.png)
 
-Not only is the text inside brackets not a link, but the text that it's linking to is a link, defined by a link _below_ the other text. Looking deeper into the specification, this is how footnotes are defined. That original text is not a link, since spaces in the link make it plaintext. However, the last line defined the text `[foo]` as a footnote, linking to `/url1`.
+Not only is the text inside brackets not a link, but the text that it's linking to is a link, defined by a link _below_ the other text. Looking deeper into the specification, I noticed that this is how footnotes are defined. That original text is not a link, since spaces in the link make it plaintext. However, the last line defined the text `[foo]` as a footnote, linking to `/url1`.
 
 What this means is neither implementation actually got this test case correct. The correct answer should have been:
 ```
@@ -106,15 +106,30 @@ if(openParen != nextCloseBracket + 1) {
     continue;
 }
 
-// HERE is where I can add a check to make sure markdown.substring(openParen + 1, closeParen) does not contain " ", using the indexOf method,
+// HERE is where I can add a check to make sure markdown.substring(openParen + 1, closeParen) does not contain " ", using the indexOf method
 
 toReturn.add(markdown.substring(openParen + 1, closeParen));
 ```
 
 The second problem here is much larger, which is the fact that both implementations completely ignore footnotes. Not only do links have to be searched within `[](this_space_here)`, they also have to be searched within `[]: this_space_here`. This requires an entirely new function that looks not only for opening and closing brackets, but also brackets followed by colons, at the end of the file. Rather than implementing this in the same function that searches for links, there could be a new function that searches for footnotes. 
 
+This is not something that I can easily show in the code, to show which line is incorrect, since it's the logic of the code itself that's incorrect. A new function needs to be created, which can be called in the main method, as such:
+```
+public static void main(String[] args) throws IOException {
+    Path fileName = Path.of(args[0]);
+    String contents = Files.readString(fileName);
+    ArrayList<String> links = getLinks(contents);
+
+    ArrayList<String> links = getFootnoteLinks(contents); // A new method needs to be made to search for all of these footnotes
+
+    System.out.println(links);
+}
+```
+
 ## Conclusion
 
 In general, the second issue is a much larger issue, not with an edge case, but rather with a whole part of the specification that was missed out in both implementations. Searching for links in footnotes is another completely new feature that needs to be implemented. 
 
 But this isn't even the end of our problems. In modern versions of Markdown, automatic URL linking is a feature, which turns plaintext links into clickable links too. In this way, our implementations miss out on numerous links that should in fact be found.
+
+Since there exist differences in even Markdown renderers, such as Github vs. VSCode vs. CommonMark vs. Safari, a lot of edge cases will always exist regardless of implementation, hence finding errors in logic such as our disregard of footnotes is the main thing to focus on.

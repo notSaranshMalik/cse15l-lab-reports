@@ -120,7 +120,7 @@ public static void main(String[] args) throws IOException {
     String contents = Files.readString(fileName);
     ArrayList<String> links = getLinks(contents);
 
-    ArrayList<String> links = getFootnoteLinks(contents); // A new method needs to be made to search for all of these footnotes
+    links.addAll(getFootnoteLinks(contents)); // A new method needs to be made to search for all of these footnotes
 
     System.out.println(links);
 }
